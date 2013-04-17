@@ -33,6 +33,8 @@ app.configure('development', function() {
 //all environments
 app.set('views', __dirname + '/UI');
 app.set('view engine', 'jade');
+app.use(express.static(__dirname + '/Libs'));
+app.use(express.static(__dirname + '/Client'));
 
 //controller routes
 app.get('/', function(req, res) {
@@ -182,6 +184,20 @@ io.sockets.on('connection', function (socket) {
       
     }
     
+  });
+
+  socket.on('sync', function(data) {
+    console.log("Recieved data from Backbone.Sync function");
+    console.log(data);
+    var backboneModel = data.model;
+    var game = new Game({name: backboneModel.name});
+    game.save(function(err, game) {
+      if (err) {
+        console.log("an error occured saving the game to the db");
+      } else {
+        console.log("successfully saved the game to the db");
+      }
+    });
   });
   
 });
